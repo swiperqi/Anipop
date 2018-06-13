@@ -28,7 +28,8 @@ void Position::move(cocos2d::Ref* pSender)
 	}
 	else
 	{
-		swap = flag = 0;
+		swap = 0;
+		flag = 3;
 	}
 }
 

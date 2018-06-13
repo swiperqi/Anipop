@@ -2,9 +2,12 @@
 
 USING_NS_CC;
 
+std::vector<std::vector<Position*>> positionStage;
 std::vector<Position*> stage;
-std::vector<int> num;
-int n = 0;
+std::vector<int> numi;
+std::vector<int> numj;
+bool sh = true;
+
 Scene* MyScene::createScene()
 {
 	// 'scene' is an autorelease object
@@ -107,6 +110,14 @@ bool MyScene::init()
 	// add the sprite as a child to this layer
 	this->addChild(sprite, 0);
 
+	auto ku = Sprite::create("llk/kuang.png");
+	ku->setPosition(0,0);
+	// add the sprite as a child to this layer
+	this->addChild(ku, 1, 101);
+
+	Hide* hide = Hide::create();
+	ku->runAction(hide);
+
 	int a;
 	char name[30];
 	srand(time(NULL));
@@ -125,7 +136,8 @@ bool MyScene::init()
 			menu->setPosition(Point::ZERO);
 			this->addChild(menu, 1);
 		}
-
+		positionStage.push_back(stage);
+		stage.clear();
 	}
 
 	this->scheduleUpdate();
@@ -135,39 +147,79 @@ bool MyScene::init()
 
 void MyScene::update(float dt)
 {
-	
+	auto ku = getChildByTag(101);
+	if (Position::flag == 1&&sh)
+	{
+		for (int i = 0; i < positionStage.size(); i++)
+		{
+			for (int j = 0; j < positionStage[i].size(); j++)
+			{
+				if (positionStage[i][j]->getSwap() == 1)
+				{
+					MoveTo* move = MoveTo::create(0, positionStage[i][j]->GetPos());
+					auto hide = Sequence::create(DelayTime::create(0.01f), Show::create(), NULL);
+					ku->runAction(Spawn::create(move, hide, NULL));
+					sh = false;
+				}
+			}
+		}
+	}
 	if (Position::flag == 2)
 	{
-		for (int i = 0; i < stage.size(); i++)
+		for (int i = 0; i < positionStage.size(); i++)
 		{
-			if (stage[i]->getSwap() == 1)
+			for (int j = 0; j < positionStage[i].size(); j++)
 			{
-				num.push_back(i);
-				n++;
+				if (positionStage[i][j]->getSwap() == 1)
+				{
+					numi.push_back(i);
+					numj.push_back(j);
+				}
 			}
 		}
 
-		if (n == 2)
+		if ((numi[0] == numi[1] && abs(numj[0] - numj[1]) == 1) || (numj[0] == numj[1] && abs(numi[0] - numi[1]) == 1))
 		{
-			cocos2d::MoveTo* move1 = cocos2d::MoveTo::create(0.3f, stage[num[0]]->GetPos());
-			cocos2d::MoveTo* move2 = cocos2d::MoveTo::create(0.3f, stage[num[1]]->GetPos());
+			cocos2d::MoveTo* move1 = cocos2d::MoveTo::create(0.3f, positionStage[numi[0]][numj[0]]->GetPos());
+			cocos2d::MoveTo* move2 = cocos2d::MoveTo::create(0.3f, positionStage[numi[1]][numj[1]]->GetPos());
 
-			stage[num[0]]->GetPic()->runAction(move2);
-			stage[num[1]]->GetPic()->runAction(move1);
+			positionStage[numi[0]][numj[0]]->GetPic()->runAction(move2);
+			positionStage[numi[1]][numj[1]]->GetPic()->runAction(move1);
 
-			Point po = stage[num[0]]->GetPos();
-			stage[num[0]]->setPos(stage[num[1]]->GetPos());
-			stage[num[1]]->setPos(po);
+			Point po = positionStage[numi[0]][numj[0]]->GetPos();
+			positionStage[numi[0]][numj[0]]->setPos(positionStage[numi[1]][numj[1]]->GetPos());
+			positionStage[numi[1]][numj[1]]->setPos(po);
 
-			stage[num[0]]->initSwap();
-			stage[num[1]]->initSwap();
+			positionStage[numi[0]][numj[0]]->initSwap();
+			positionStage[numi[1]][numj[1]]->initSwap();
 
-			num.clear();
+			std::swap(positionStage[numi[0]][numj[0]], positionStage[numi[1]][numj[1]]);
 
-			n = 0;
+			numi.clear();
+			numj.clear();
 		}
+		else
+		{
+			positionStage[numi[0]][numj[0]]->initSwap();
+			positionStage[numi[1]][numj[1]]->initSwap();
+
+			numi.clear();
+			numj.clear();
+		}
+		
+		Hide* hide = Hide::create();
+		ku->runAction(hide);
+		sh = true;
 		Position::flag = 0;
 	}
+	if (Position::flag == 3)
+	{
+		Hide* hide = Hide::create();
+		ku->runAction(hide);
+		sh = true;
+		Position::flag = 0;
+	}
+	
 }
 
 void MyScene::menuCloseCallback(Ref* pSender)
