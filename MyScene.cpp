@@ -162,10 +162,7 @@ void MyScene::update(float dt)
 			stage[num[0]]->initSwap();
 			stage[num[1]]->initSwap();
 
-			/*stage.clear();
-			num.clear();*/
-			num.pop_back();
-			num.pop_back();
+			num.clear();
 
 			n = 0;
 		}

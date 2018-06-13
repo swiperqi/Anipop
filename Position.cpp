@@ -32,17 +32,6 @@ void Position::move(cocos2d::Ref* pSender)
 	}
 }
 
-void Position::picMove()
-{
-	cocos2d::MoveTo* move1 = cocos2d::MoveTo::create(0.3f, posStage[0]);
-	cocos2d::MoveTo* move2 = cocos2d::MoveTo::create(0.3f, posStage[1]);
-
-
-	picStage[0]->runAction(move2);
-	picStage[1]->runAction(move1);
-	flag = 0;
-}
-
 Position::~Position()
 {
 }
