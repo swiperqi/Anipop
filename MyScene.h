@@ -18,6 +18,10 @@ public:
 
 	void update(float dt);
 
+	bool melt();
+
+	void pushMeltPos(int i, int j);
+
 	// implement the "static create()" method manually
 	CREATE_FUNC(MyScene);
 private:

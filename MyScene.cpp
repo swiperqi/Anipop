@@ -3,6 +3,8 @@
 USING_NS_CC;
 
 std::vector<std::vector<Position*>> positionStage;
+std::vector<int> melti;
+std::vector<int> meltj;
 std::vector<Position*> stage;
 std::vector<int> numi;
 std::vector<int> numj;
@@ -102,7 +104,7 @@ bool MyScene::init()
 
 	// add "HelloWorld" splash screen"
 
-	auto sprite = Sprite::create("llkbg/llkbg2.png");
+	auto sprite = Sprite::create("llkbg/llkbg1.png");
 
 	// position the sprite on the center of the screen
 	sprite->setPosition(origin.x + visibleSize.width / 2,origin.y + visibleSize.height/2);
@@ -113,7 +115,7 @@ bool MyScene::init()
 	auto ku = Sprite::create("llk/kuang.png");
 	ku->setPosition(0,0);
 	// add the sprite as a child to this layer
-	this->addChild(ku, 1, 101);
+	this->addChild(ku, 2, 101);
 
 	Hide* hide = Hide::create();
 	ku->runAction(hide);
@@ -125,7 +127,7 @@ bool MyScene::init()
 	{
 		for (int j = 0; j < 8; j++)
 		{
-			a = rand() % 15 + 1;
+			a = rand() % 7 + 1;
 			sprintf(name, "llk/llk%d.png", a);
 
 			Position *p=new Position(pos[i][j], name);
@@ -139,6 +141,9 @@ bool MyScene::init()
 		positionStage.push_back(stage);
 		stage.clear();
 	}
+
+	melt();
+	
 
 	this->scheduleUpdate();
 
@@ -195,6 +200,24 @@ void MyScene::update(float dt)
 
 			std::swap(positionStage[numi[0]][numj[0]], positionStage[numi[1]][numj[1]]);
 
+			if (!melt())
+			{
+				cocos2d::MoveTo* move3 = cocos2d::MoveTo::create(0.3f, positionStage[numi[0]][numj[0]]->GetPos());
+				cocos2d::MoveTo* move4 = cocos2d::MoveTo::create(0.3f, positionStage[numi[1]][numj[1]]->GetPos());
+
+				positionStage[numi[0]][numj[0]]->GetPic()->runAction(move4);
+				positionStage[numi[1]][numj[1]]->GetPic()->runAction(move3);
+
+				po = positionStage[numi[0]][numj[0]]->GetPos();
+				positionStage[numi[0]][numj[0]]->setPos(positionStage[numi[1]][numj[1]]->GetPos());
+				positionStage[numi[1]][numj[1]]->setPos(po);
+
+				positionStage[numi[0]][numj[0]]->initSwap();
+				positionStage[numi[1]][numj[1]]->initSwap();
+
+				std::swap(positionStage[numi[0]][numj[0]], positionStage[numi[1]][numj[1]]);
+			}
+
 			numi.clear();
 			numj.clear();
 		}
@@ -220,6 +243,88 @@ void MyScene::update(float dt)
 		Position::flag = 0;
 	}
 	
+}
+
+bool MyScene::melt()
+{
+	for (int i = 0; i < positionStage.size(); i++)
+	{
+		for (int j = 0; j < positionStage[i].size(); j++)
+		{
+			if (j < positionStage[i].size() - 2)
+			{
+				if (positionStage[i][j]->getName() == positionStage[i][j + 1]->getName() && positionStage[i][j]->getName() == positionStage[i][j + 2]->getName())
+				{
+					pushMeltPos(i, j);
+					pushMeltPos(i, j + 1);
+					pushMeltPos(i, j + 2);
+
+					if (j + 3 < positionStage[i].size() && positionStage[i][j]->getName() == positionStage[i][j + 3]->getName())
+					{
+						pushMeltPos(i, j + 3);
+						if (j + 4 < positionStage[i].size() && positionStage[i][j]->getName() == positionStage[i][j + 4]->getName())
+						{
+							pushMeltPos(i, j + 4);
+						}
+					}					
+				}
+			}
+
+			if (i < positionStage.size() - 2)
+			{
+				if (positionStage[i][j]->getName() == positionStage[i+1][j]->getName() && positionStage[i][j]->getName() == positionStage[i + 2][j]->getName())
+				{
+					pushMeltPos(i, j);
+					pushMeltPos(i + 1, j);
+					pushMeltPos(i + 2, j);
+
+					if (i + 3 < positionStage.size() && positionStage[i][j]->getName() == positionStage[i + 3][j]->getName())
+					{
+						pushMeltPos(i + 3, j);
+						if (i + 4 < positionStage.size() && positionStage[i][j]->getName() == positionStage[i + 4][j]->getName())
+						{
+							pushMeltPos(i + 4, j);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (melti.size() != 0)
+	{
+		for (int i = 0; i < melti.size(); i++)
+		{
+			ScaleTo* m = ScaleTo::create(3.0f, 0.0f);
+			positionStage[melti[i]][meltj[i]]->GetPic()->runAction(m);
+		}
+
+
+		melti.clear();
+		meltj.clear();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void MyScene::pushMeltPos(int i, int j)
+{
+	int k;
+	for (k = 0; k < melti.size(); k++)
+	{
+		if (i == melti[k] && j == meltj[k])
+		{
+			break;
+		}
+	}
+	if (k == melti.size())
+	{
+		melti.push_back(i);
+		meltj.push_back(j);
+	}
 }
 
 void MyScene::menuCloseCallback(Ref* pSender)

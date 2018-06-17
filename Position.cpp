@@ -56,3 +56,8 @@ int Position::getSwap()
 {
 	return swap;
 }
+
+std::string Position::getName()
+{
+	return name;
+}
