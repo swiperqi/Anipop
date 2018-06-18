@@ -26,6 +26,7 @@ public:
 	CREATE_FUNC(MyScene);
 private:
 	cocos2d::Point pos[8][8];
+	cocos2d::Point spos[8];
 };
 
 #endif // __HELLOWORLD_SCENE_H__

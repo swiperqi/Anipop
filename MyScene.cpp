@@ -50,6 +50,12 @@ bool MyScene::init()
 		x = -180;
 		y += 50;
 	}
+	x = -180;
+	for (int i = 0; i < 8; i++)
+	{
+		spos[i] = Point(origin.x + visibleSize.width / 2 + x, origin.y + visibleSize.height + 100);
+		x += 50;
+	}
 
 	/////////////////////////////
 	// 2. add a menu item with "X" image, which is clicked to quit the program
@@ -188,8 +194,8 @@ void MyScene::update(float dt)
 			cocos2d::MoveTo* move1 = cocos2d::MoveTo::create(0.3f, positionStage[numi[0]][numj[0]]->GetPos());
 			cocos2d::MoveTo* move2 = cocos2d::MoveTo::create(0.3f, positionStage[numi[1]][numj[1]]->GetPos());
 
-			positionStage[numi[0]][numj[0]]->GetPic()->runAction(Spawn::create(move2, DelayTime::create(0.3f), NULL));
-			positionStage[numi[1]][numj[1]]->GetPic()->runAction(Spawn::create(move1, DelayTime::create(0.3f), NULL));
+			positionStage[numi[0]][numj[0]]->GetPic()->runAction(Sequence::create(move2, DelayTime::create(0.3f), NULL));
+			positionStage[numi[1]][numj[1]]->GetPic()->runAction(Sequence::create(move1, DelayTime::create(0.3f), NULL));
 
 			Point po = positionStage[numi[0]][numj[0]]->GetPos();
 			positionStage[numi[0]][numj[0]]->setPos(positionStage[numi[1]][numj[1]]->GetPos());
@@ -205,8 +211,8 @@ void MyScene::update(float dt)
 				cocos2d::MoveTo* move3 = cocos2d::MoveTo::create(0.3f, positionStage[numi[0]][numj[0]]->GetPos());
 				cocos2d::MoveTo* move4 = cocos2d::MoveTo::create(0.3f, positionStage[numi[1]][numj[1]]->GetPos());
 
-				positionStage[numi[0]][numj[0]]->GetPic()->runAction(Spawn::create(move4, DelayTime::create(0.3f), NULL));
-				positionStage[numi[1]][numj[1]]->GetPic()->runAction(Spawn::create(move3, DelayTime::create(0.3f), NULL));
+				positionStage[numi[0]][numj[0]]->GetPic()->runAction(Sequence::create(DelayTime::create(0.3f), move4, NULL));
+				positionStage[numi[1]][numj[1]]->GetPic()->runAction(Sequence::create(DelayTime::create(0.3f), move3, NULL));
 
 				po = positionStage[numi[0]][numj[0]]->GetPos();
 				positionStage[numi[0]][numj[0]]->setPos(positionStage[numi[1]][numj[1]]->GetPos());
@@ -295,66 +301,74 @@ bool MyScene::melt()
 	{
 		for (int i = 0; i < melti.size(); i++)
 		{
-			ScaleTo* m = ScaleTo::create(3.0f, 0.0f);
-			positionStage[melti[i]][meltj[i]]->GetPic()->runAction(Spawn::create(m, DelayTime::create(3.0f), NULL));
+			ScaleTo* m = ScaleTo::create(3.0f, 0.1f);
+			positionStage[melti[i]][meltj[i]]->GetPic()->runAction(Sequence::create(DelayTime::create(0.3f), m, NULL));
 		}
-		for (int j = 0; j < 8; j++)
+		
+		for (int i = 0; i < positionStage.size(); i++)
 		{
-			int n = 0;
-			int i = 0;
-			for (int k = 0; k < meltj.size(); k++)
+			for (int j = 0; j < positionStage[i].size(); j++)
 			{
-				if (j == meltj[k])
+				for (int k = 0; k < melti.size(); k++)
 				{
-					for (int l = 0; l < meltj.size(); l++)
+					if (i == melti[k] && j == meltj[k])
 					{
-						if (meltj[l] == meltj[k])
-						{
-							n++;
-						}
+						positionStage[i][j]->setName("null");
 					}
-					i = melti[k];
-					break;
 				}
 			}
-			if (n != 0)
+		}
+
+		for (int i = 0; i < 8; i++)
+		{
+			for (int j = 0; j < 8; j++)
 			{
-				for (int k = i; k < positionStage.size(); k++)
+				if (positionStage[j][i]->getName() == "null")
 				{
-					int l;
-					for (l = 0; l < meltj.size(); l++)
+					for (int k = j; k < 8; k++)
 					{
-						if (k == melti[l] && j == meltj[l])
+						if (positionStage[k][i]->getName() != "null")
 						{
+							Point p = positionStage[k][i]->GetPos();
+							positionStage[k][i]->setPos(positionStage[j][i]->GetPos());
+							positionStage[j][i]->setPos(p);
+							std::swap(positionStage[k][i], positionStage[j][i]);
 							break;
 						}
 					}
-					if (l == meltj.size())
-					{
-						cocos2d::MoveTo* move1 = cocos2d::MoveTo::create(0.3f, positionStage[k][j]->GetPos());
-						cocos2d::MoveTo* move2 = cocos2d::MoveTo::create(0.3f, positionStage[i][j]->GetPos());
-
-						positionStage[k][j]->GetPic()->runAction(Spawn::create(move2, DelayTime::create(0.3f), NULL));
-						positionStage[i][j]->GetPic()->runAction(Spawn::create(move1, DelayTime::create(0.3f), NULL));
-
-						Point po = positionStage[k][j]->GetPos();
-						positionStage[k][j]->setPos(positionStage[i][j]->GetPos());
-						positionStage[i][j]->setPos(po);
-
-						std::swap(positionStage[k][j], positionStage[i][j]);
-
-						for (int q = 0; q < melti.size(); q++)
-						{
-							if (melti[q] == i&&meltj[q] == j)
-							{
-								melti[q] = k;
-							}
-						}
-						i++;
-					}
 				}
 			}
 		}
+		int a;
+		char name[30];
+		srand(time(NULL));
+		for (int i = 0; i < 8; i++)
+		{
+			for (int j = 0; j < 8; j++)
+			{
+				if (positionStage[i][j]->getName() == "null")
+				{
+					a = rand() % 7 + 1;
+					sprintf(name, "llk/llk%d.png", a);
+					positionStage[i][j]->setName(name);
+
+					MoveTo* move = MoveTo::create(0.0f, spos[j]);
+					ScaleTo* scale = ScaleTo::create(0.0f, 1.0f);
+
+					positionStage[i][j]->GetPic()->runAction(Sequence::create(DelayTime::create(3.0f), Spawn::create(move, scale), NULL));
+				}
+			}
+		}
+
+		for (int i = 0; i < 8; i++)
+		{
+			for (int j = 0; j < 8; j++)
+			{
+				MoveTo* move = MoveTo::create(1.0f, positionStage[i][j]->GetPos());
+				positionStage[i][j]->GetPic()->runAction(Sequence::create(DelayTime::create(3.0f), move,NULL));
+			}
+		}
+
 
 		melti.clear();
 		meltj.clear();
