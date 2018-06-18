@@ -102,7 +102,7 @@ bool MyScene::init()
 	gradeLabel->setColor(ccc3(0, 0, 1));
 	// position the label on the center of the screen
 	gradeLabel->setPosition(Point(origin.x + visibleSize.width / 2 - 100,
-		origin.y + visibleSize.height - gradeLabel->getContentSize().height - 50));
+		origin.y + visibleSize.height - gradeLabel->getContentSize().height - 30));
 
 	// add the label as a child to this layer
 	this->addChild(gradeLabel, 1);
@@ -111,7 +111,7 @@ bool MyScene::init()
 	stepLabel->setColor(ccc3(0, 0, 0));
 	// position the label on the center of the screen
 	stepLabel->setPosition(Point(origin.x + visibleSize.width / 2 + 100,
-		origin.y + visibleSize.height - stepLabel->getContentSize().height - 50));
+		origin.y + visibleSize.height - stepLabel->getContentSize().height - 30));
 
 	// add the label as a child to this layer
 	this->addChild(stepLabel, 1);
