@@ -61,3 +61,8 @@ std::string Position::getName()
 {
 	return name;
 }
+
+void Position::setName(std::string name)
+{
+	this->name = name;
+}

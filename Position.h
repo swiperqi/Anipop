@@ -17,6 +17,7 @@ public:
 	int getSwap();
 	static int flag;
 	std::string getName();
+	void setName(std::string name);
 private:
 	cocos2d::Point pos;
 	cocos2d::MenuItemImage* pic;
