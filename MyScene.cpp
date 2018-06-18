@@ -11,6 +11,10 @@ std::vector<Position*> stage;
 std::vector<int> numi;
 std::vector<int> numj;
 bool sh = true;
+int grade = 0;
+int step = 0;
+LabelTTF* gradeLabel;
+LabelTTF* stepLabel;
 
 Scene* MyScene::createScene()
 {
@@ -94,23 +98,23 @@ bool MyScene::init()
 	// add the label as a child to this layer
 	this->addChild(label, 1);
 
-	label = LabelTTF::create("Grade:0", "Arial", 18);
-	label->setColor(ccc3(0, 0, 0));
+	gradeLabel = LabelTTF::create("Grade:0", "Arial", 18);
+	gradeLabel->setColor(ccc3(0, 0, 1));
 	// position the label on the center of the screen
-	label->setPosition(Point(origin.x + visibleSize.width / 2 - 100,
-		origin.y + visibleSize.height - label->getContentSize().height - 50));
+	gradeLabel->setPosition(Point(origin.x + visibleSize.width / 2 - 100,
+		origin.y + visibleSize.height - gradeLabel->getContentSize().height - 50));
 
 	// add the label as a child to this layer
-	this->addChild(label, 1);
+	this->addChild(gradeLabel, 1);
 
-	label = LabelTTF::create("Step:0", "Arial", 18);
-	label->setColor(ccc3(0, 0, 0));
+	stepLabel = LabelTTF::create("Step:0", "Arial", 18);
+	stepLabel->setColor(ccc3(0, 0, 0));
 	// position the label on the center of the screen
-	label->setPosition(Point(origin.x + visibleSize.width / 2 + 100,
-		origin.y + visibleSize.height - label->getContentSize().height - 50));
+	stepLabel->setPosition(Point(origin.x + visibleSize.width / 2 + 100,
+		origin.y + visibleSize.height - stepLabel->getContentSize().height - 50));
 
 	// add the label as a child to this layer
-	this->addChild(label, 1);
+	this->addChild(stepLabel, 1);
 
 	// add "HelloWorld" splash screen"
 
@@ -163,6 +167,15 @@ bool MyScene::init()
 void MyScene::update(float dt)
 {
 	auto ku = getChildByTag(101);
+
+	char g[20];
+	sprintf(g, "Grade:%d", grade);
+	gradeLabel->setString(g);
+
+	char s[20];
+	sprintf(s, "Step:%d", step);
+	stepLabel->setString(s);
+
 	if (Position::flag == 1&&sh)
 	{
 		for (int i = 0; i < positionStage.size(); i++)
@@ -181,6 +194,7 @@ void MyScene::update(float dt)
 	}
 	if (Position::flag == 2)
 	{
+		step++;
 		for (int i = 0; i < positionStage.size(); i++)
 		{
 			for (int j = 0; j < positionStage[i].size(); j++)
@@ -311,6 +325,9 @@ bool MyScene::melt()
 			
 			positionStage[melti[i]][meltj[i]]->GetPic()->runAction(Sequence::create(DelayTime::create(0.3f), m, DelayTime::create(0.3f),m1, NULL));
 			unsigned int effectID = CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("melt.mp3");
+
+			grade += pow(2, melti.size());
+
 		}
 		
 		for (int i = 0; i < positionStage.size(); i++)
