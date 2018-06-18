@@ -1,4 +1,6 @@
 #include "MyScene.h"
+#include "SimpleAudioEngine.h"  
+using namespace CocosDenshion;
 
 USING_NS_CC;
 
@@ -34,6 +36,8 @@ bool MyScene::init()
 	{
 		return false;
 	}
+
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("bgm.mp3", true);
 
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Point origin = Director::getInstance()->getVisibleOrigin();
@@ -301,10 +305,12 @@ bool MyScene::melt()
 	{
 		for (int i = 0; i < melti.size(); i++)
 		{
-			ScaleTo* m = ScaleTo::create(3.0f, 0.5f);
+			ScaleTo* m = ScaleTo::create(0.5f, 0.0f);
 
 			ScaleTo* m1 = ScaleTo::create(0.0f, 1.0f);
+			
 			positionStage[melti[i]][meltj[i]]->GetPic()->runAction(Sequence::create(DelayTime::create(0.3f), m, DelayTime::create(0.3f),m1, NULL));
+			unsigned int effectID = CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("melt.mp3");
 		}
 		
 		for (int i = 0; i < positionStage.size(); i++)
@@ -356,7 +362,7 @@ bool MyScene::melt()
 
 					MoveTo* move = MoveTo::create(0.0f, spos[j]);
 
-					positionStage[i][j]->GetPic()->runAction(Sequence::create(DelayTime::create(3.0f), move, NULL));
+					positionStage[i][j]->GetPic()->runAction(Sequence::create(DelayTime::create(0.5f), move, NULL));
 
 					positionStage[i][j]->resetPic(name, spos[j]);
 
@@ -372,7 +378,7 @@ bool MyScene::melt()
 			for (int j = 0; j < 8; j++)
 			{
 				MoveTo* move = MoveTo::create(1.0f, positionStage[i][j]->GetPos());
-				positionStage[i][j]->GetPic()->runAction(Sequence::create(DelayTime::create(3.0f), move,NULL));
+				positionStage[i][j]->GetPic()->runAction(Sequence::create(DelayTime::create(0.5f), move,NULL));
 			}
 		}
 
