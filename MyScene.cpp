@@ -301,8 +301,10 @@ bool MyScene::melt()
 	{
 		for (int i = 0; i < melti.size(); i++)
 		{
-			ScaleTo* m = ScaleTo::create(3.0f, 0.1f);
-			positionStage[melti[i]][meltj[i]]->GetPic()->runAction(Sequence::create(DelayTime::create(0.3f), m, NULL));
+			ScaleTo* m = ScaleTo::create(3.0f, 0.5f);
+
+			ScaleTo* m1 = ScaleTo::create(0.0f, 1.0f);
+			positionStage[melti[i]][meltj[i]]->GetPic()->runAction(Sequence::create(DelayTime::create(0.3f), m, DelayTime::create(0.3f),m1, NULL));
 		}
 		
 		for (int i = 0; i < positionStage.size(); i++)
@@ -353,9 +355,14 @@ bool MyScene::melt()
 					positionStage[i][j]->setName(name);
 
 					MoveTo* move = MoveTo::create(0.0f, spos[j]);
-					ScaleTo* scale = ScaleTo::create(0.0f, 1.0f);
 
-					positionStage[i][j]->GetPic()->runAction(Sequence::create(DelayTime::create(3.0f), Spawn::create(move, scale), NULL));
+					positionStage[i][j]->GetPic()->runAction(Sequence::create(DelayTime::create(3.0f), move, NULL));
+
+					positionStage[i][j]->resetPic(name, spos[j]);
+
+					auto menu = Menu::create(positionStage[i][j]->GetPic(), NULL);
+					menu->setPosition(Point::ZERO);
+					this->addChild(menu, 1);
 				}
 			}
 		}

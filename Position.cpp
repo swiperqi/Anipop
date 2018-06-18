@@ -66,3 +66,12 @@ void Position::setName(std::string name)
 {
 	this->name = name;
 }
+
+void Position::resetPic(std::string name, cocos2d::Point pos)
+{
+	pic = cocos2d::MenuItemImage::create(
+		name,
+		name,
+		CC_CALLBACK_1(Position::move, this));
+	pic->setPosition(pos);
+}
